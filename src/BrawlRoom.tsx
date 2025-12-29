@@ -133,7 +133,7 @@ function BrawlRoom() {
       minHeight: '100vh',
       color: 'white',
     }}>
-      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+      <div>
         <div style={{ marginBottom: '30px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
           <h1 style={{ fontSize: '2.5rem', margin: 0 }}>🎵 Song Brawl Room</h1>
           <div style={{ display: 'flex', gap: '10px' }}>
@@ -169,190 +169,212 @@ function BrawlRoom() {
         </div>
 
         <div style={{
-          backgroundColor: '#1e293b',
-          padding: '20px',
-          borderRadius: '8px',
-          marginBottom: '30px',
+          display: 'flex',
+          gap: '30px',
+          flexWrap: 'wrap',
+          alignItems: 'flex-start'
         }}>
-          <h2 style={{ marginTop: 0 }}>Add a Song</h2>
-          <form onSubmit={handleAddSong} style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '30px' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                Song Name *
-              </label>
-              <input
-                type="text"
-                value={songName}
-                onChange={(e) => setSongName(e.target.value)}
-                placeholder="Enter song name"
-                required
+          {/* Left Column: Add Song Form & Create New Brawl Button */}
+          <div style={{
+            flex: '1',
+            minWidth: '300px',
+            backgroundColor: '#1e293b',
+            padding: '20px',
+            borderRadius: '8px',
+            marginBottom: '30px',
+          }}>
+            <h2 style={{ marginTop: 0 }}>Add a Song</h2>
+            <form onSubmit={handleAddSong} style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '30px' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                  Song Name *
+                </label>
+                <input
+                  type="text"
+                  value={songName}
+                  onChange={(e) => setSongName(e.target.value)}
+                  placeholder="Enter song name"
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '10px',
+                    fontSize: '1rem',
+                    borderRadius: '6px',
+                    border: '2px solid #475569',
+                    backgroundColor: '#0f172a',
+                    color: 'white',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                  YouTube Link (optional)
+                </label>
+                <input
+                  type="url"
+                  value={youtubeLink}
+                  onChange={(e) => setYoutubeLink(e.target.value)}
+                  placeholder="https://youtube.com/watch?v=..."
+                  style={{
+                    width: '100%',
+                    padding: '10px',
+                    fontSize: '1rem',
+                    borderRadius: '6px',
+                    border: '2px solid #475569',
+                    backgroundColor: '#0f172a',
+                    color: 'white',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+              <button
+                type="submit"
                 style={{
-                  width: '100%',
-                  padding: '10px',
-                  fontSize: '1rem',
-                  borderRadius: '6px',
-                  border: '2px solid #475569',
-                  backgroundColor: '#0f172a',
+                  padding: '12px',
+                  fontSize: '1.1rem',
+                  backgroundColor: '#3b82f6',
                   color: 'white',
-                }}
-              />
-            </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                YouTube Link (optional)
-              </label>
-              <input
-                type="url"
-                value={youtubeLink}
-                onChange={(e) => setYoutubeLink(e.target.value)}
-                placeholder="https://youtube.com/watch?v=..."
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  fontSize: '1rem',
+                  border: 'none',
                   borderRadius: '6px',
-                  border: '2px solid #475569',
-                  backgroundColor: '#0f172a',
-                  color: 'white',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
                 }}
-              />
-            </div>
-            <button
-              type="submit"
-              style={{
-                padding: '12px',
-                fontSize: '1.1rem',
-                backgroundColor: '#3b82f6',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontWeight: 'bold',
-              }}
-            >
-              Add Song
-            </button>
-          </form>
+              >
+                Add Song
+              </button>
+            </form>
 
-          {brawl.songs.length > 0 ? (
-            <>
-              <h2 style={{ marginTop: '20px' }}>Songs ({brawl.songs.length})</h2>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '30px' }}>
-                {brawl.songs.map((song) => (
-                  <div
-                    key={song.id}
+            <div style={{ borderTop: '1px solid #334155', paddingTop: '20px', marginTop: '20px' }}>
+              <button
+                onClick={handleCreateNewBrawl}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  backgroundColor: 'transparent',
+                  color: '#94a3b8',
+                  border: '1px dashed #475569',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  fontSize: '1rem',
+                  transition: 'all 0.2s',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#0f172a';
+                  e.currentTarget.style.color = 'white';
+                  e.currentTarget.style.borderColor = '#3b82f6';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.color = '#94a3b8';
+                  e.currentTarget.style.borderColor = '#475569';
+                }}
+              >
+                ➕ Create a Brand New Brawl Room
+              </button>
+            </div>
+          </div>
+
+          {/* Right Column: Added Songs List */}
+          <div style={{
+            flex: '2',
+            minWidth: '300px',
+            backgroundColor: '#1e293b',
+            padding: '20px',
+            borderRadius: '8px',
+            marginBottom: '30px',
+          }}>
+            {brawl.songs.length > 0 ? (
+              <>
+                <h2 style={{ marginTop: 0 }}>Songs ({brawl.songs.length})</h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '30px' }}>
+                  {brawl.songs.map((song) => (
+                    <div
+                      key={song.id}
+                      style={{
+                        backgroundColor: '#0f172a',
+                        padding: '15px',
+                        borderRadius: '6px',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                        gap: '10px',
+                      }}
+                    >
+                      <div style={{ flex: 1, minWidth: '200px' }}>
+                        <div style={{ fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '5px' }}>
+                          {song.name}
+                        </div>
+                        {song.youtubeLink && (
+                          <a
+                            href={song.youtubeLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ color: '#3b82f6', textDecoration: 'none', fontSize: '0.9rem' }}
+                          >
+                            🎬 Watch on YouTube
+                          </a>
+                        )}
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
+                          ❤️ {song.votes} {song.votes === 1 ? 'vote' : 'votes'}
+                        </span>
+                        <button
+                          onClick={() => handleAddVote(song.id)}
+                          style={{
+                            padding: '8px 16px',
+                            backgroundColor: '#ec4899',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontWeight: 'bold',
+                          }}
+                        >
+                          + Vote
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+                  <button
+                    onClick={handleBrawl}
+                    disabled={brawl.songs.length === 0}
                     style={{
-                      backgroundColor: '#0f172a',
-                      padding: '15px',
-                      borderRadius: '6px',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      flexWrap: 'wrap',
-                      gap: '10px',
+                      padding: '20px 40px',
+                      fontSize: '1.5rem',
+                      backgroundColor: brawl.songs.length === 0 ? '#475569' : '#ef4444',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '8px',
+                      cursor: brawl.songs.length === 0 ? 'not-allowed' : 'pointer',
+                      fontWeight: 'bold',
+                      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)',
+                      width: '100%',
                     }}
                   >
-                    <div style={{ flex: 1, minWidth: '200px' }}>
-                      <div style={{ fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '5px' }}>
-                        {song.name}
-                      </div>
-                      {song.youtubeLink && (
-                        <a
-                          href={song.youtubeLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{ color: '#3b82f6', textDecoration: 'none', fontSize: '0.9rem' }}
-                        >
-                          🎬 Watch on YouTube
-                        </a>
-                      )}
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
-                        ❤️ {song.votes} {song.votes === 1 ? 'vote' : 'votes'}
-                      </span>
-                      <button
-                        onClick={() => handleAddVote(song.id)}
-                        style={{
-                          padding: '8px 16px',
-                          backgroundColor: '#ec4899',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          fontWeight: 'bold',
-                        }}
-                      >
-                        + Vote
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                    🥊 START BRAWL!
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div style={{
+                textAlign: 'center',
+                padding: '40px 20px',
+                backgroundColor: '#0f172a',
+                borderRadius: '8px',
+                marginBottom: '30px',
+              }}>
+                <p style={{ fontSize: '1.1rem', color: '#94a3b8' }}>
+                  No songs added yet. Add your first song to get started!
+                </p>
               </div>
-
-              <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-                <button
-                  onClick={handleBrawl}
-                  disabled={brawl.songs.length === 0}
-                  style={{
-                    padding: '20px 40px',
-                    fontSize: '1.5rem',
-                    backgroundColor: brawl.songs.length === 0 ? '#475569' : '#ef4444',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: brawl.songs.length === 0 ? 'not-allowed' : 'pointer',
-                    fontWeight: 'bold',
-                    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)',
-                    width: '100%',
-                  }}
-                >
-                  🥊 START BRAWL!
-                </button>
-              </div>
-            </>
-          ) : (
-            <div style={{
-              textAlign: 'center',
-              padding: '40px 20px',
-              backgroundColor: '#0f172a',
-              borderRadius: '8px',
-              marginBottom: '30px',
-            }}>
-              <p style={{ fontSize: '1.1rem', color: '#94a3b8' }}>
-                No songs added yet. Add your first song to get started!
-              </p>
-            </div>
-          )}
-
-          <div style={{ borderTop: '1px solid #334155', paddingTop: '20px', marginTop: '20px' }}>
-            <button
-              onClick={handleCreateNewBrawl}
-              style={{
-                width: '100%',
-                padding: '12px',
-                backgroundColor: 'transparent',
-                color: '#94a3b8',
-                border: '1px dashed #475569',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontWeight: 'bold',
-                fontSize: '1rem',
-                transition: 'all 0.2s',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#0f172a';
-                e.currentTarget.style.color = 'white';
-                e.currentTarget.style.borderColor = '#3b82f6';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent';
-                e.currentTarget.style.color = '#94a3b8';
-                e.currentTarget.style.borderColor = '#475569';
-              }}
-            >
-              ➕ Create a Brand New Brawl Room
-            </button>
+            )}
           </div>
         </div>
 
