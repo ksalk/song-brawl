@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import type { Brawl, Song } from '../../utils/types';
 import { BrawlService } from '../../utils/brawlService';
 import { generateGuid } from '../../utils/utils';
@@ -16,7 +15,7 @@ function getYouTubeVideoId(url: string): string | null {
 }
 
 function BrawlRoom() {
-  const { brawlId } = useParams<{ brawlId: string }>();
+  const { brawlId } = Route.useParams();
   const navigate = useNavigate();
   const [brawl, setBrawl] = useState<Brawl | null>(null);
   const [loading, setLoading] = useState(true);
@@ -27,7 +26,7 @@ function BrawlRoom() {
 
   useEffect(() => {
     if (!brawlId) {
-      navigate('/');
+      navigate({ to: '/' });
       return;
     }
 
@@ -120,7 +119,7 @@ function BrawlRoom() {
   const handleCreateNewBrawl = async () => {
     const newBrawlId = generateGuid();
     await BrawlService.createBrawl(newBrawlId);
-    navigate(`/brawl/${newBrawlId}`);
+    navigate({ to: `/brawl/${newBrawlId}` });
   };
 
   if (loading || !brawl) {
@@ -195,7 +194,7 @@ function BrawlRoom() {
 
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
             <button
-              onClick={() => navigate('/')}
+              onClick={() => navigate({ to: '/' })}
               style={{
                 padding: '10px 20px',
                 background: 'rgba(255, 255, 255, 0.1)',
