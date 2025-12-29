@@ -20,6 +20,7 @@ function BrawlRoom() {
   const [songName, setSongName] = useState('');
   const [youtubeLink, setYoutubeLink] = useState('');
   const [showWinner, setShowWinner] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
 
   useEffect(() => {
     if (!brawlId) {
@@ -101,7 +102,8 @@ function BrawlRoom() {
   const handleCopyLink = () => {
     const url = window.location.href;
     navigator.clipboard.writeText(url);
-    alert('Link copied to clipboard! Share it with your friends!');
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2000);
   };
 
   const handleNewBrawl = () => {
@@ -120,33 +122,99 @@ function BrawlRoom() {
 
   if (loading || !brawl) {
     return (
-      <div style={{ padding: '20px', backgroundColor: '#0f172a', minHeight: '100vh', color: 'white' }}>
-        Loading...
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        color: 'white',
+      }}>
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '16px',
+        }}>
+          <div style={{
+            width: '48px',
+            height: '48px',
+            border: '3px solid rgba(99, 102, 241, 0.3)',
+            borderTopColor: '#6366f1',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+          }} />
+          <span style={{ color: 'rgba(255,255,255,0.7)' }}>Loading brawl...</span>
+          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+        </div>
       </div>
     );
   }
 
   return (
     <div style={{
-      padding: '20px',
-      backgroundColor: '#0f172a',
+      padding: '24px',
       minHeight: '100vh',
       color: 'white',
+      animation: 'fadeIn 0.4s ease-out',
     }}>
-      <div>
-        <div style={{ marginBottom: '30px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-          <h1 style={{ fontSize: '2.5rem', margin: 0 }}>🎵 Song Brawl Room</h1>
-          <div style={{ display: 'flex', gap: '10px' }}>
+      <style>{`
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        @keyframes confetti { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(-100px) rotate(720deg); opacity: 0; } }
+      `}</style>
+
+      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        {/* Header */}
+        <div style={{
+          marginBottom: '32px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '16px',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span style={{ fontSize: '2.5rem' }}>🎵</span>
+            <h1 style={{
+              fontSize: 'clamp(1.5rem, 5vw, 2rem)',
+              margin: 0,
+              background: 'linear-gradient(135deg, #fff, #6366f1)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              fontWeight: 700,
+            }}>
+              Brawl Room
+            </h1>
+          </div>
+
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
             <button
               onClick={() => navigate('/')}
               style={{
                 padding: '10px 20px',
-                backgroundColor: 'transparent',
+                background: 'rgba(255, 255, 255, 0.1)',
+                backdropFilter: 'blur(10px)',
                 color: 'white',
-                border: '1px solid #475569',
-                borderRadius: '6px',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: '50px',
                 cursor: 'pointer',
-                fontWeight: 'bold',
+                fontWeight: 600,
+                fontSize: '0.9rem',
+                transition: 'all 0.2s ease',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
               🏠 Home
@@ -155,38 +223,71 @@ function BrawlRoom() {
               onClick={handleCopyLink}
               style={{
                 padding: '10px 20px',
-                backgroundColor: '#10b981',
+                background: copiedLink
+                  ? 'linear-gradient(135deg, #10b981, #34d399)'
+                  : 'linear-gradient(135deg, #10b981, #059669)',
                 color: 'white',
                 border: 'none',
-                borderRadius: '6px',
+                borderRadius: '50px',
                 cursor: 'pointer',
-                fontWeight: 'bold',
+                fontWeight: 600,
+                fontSize: '0.9rem',
+                transition: 'all 0.2s ease',
+                boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 6px 20px rgba(16, 185, 129, 0.4)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 15px rgba(16, 185, 129, 0.3)';
               }}
             >
-              📋 Copy Share Link
+              {copiedLink ? '✓ Copied!' : '🔗 Share Link'}
             </button>
           </div>
         </div>
 
         <div style={{
-          display: 'flex',
-          gap: '30px',
-          flexWrap: 'wrap',
-          alignItems: 'flex-start'
+          display: 'grid',
+          gridTemplateColumns: 'minmax(300px, 1fr) minmax(300px, 2fr)',
+          gap: '24px',
+          alignItems: 'start',
         }}>
-          {/* Left Column: Add Song Form & Create New Brawl Button */}
+          {/* Left Column: Add Song Form */}
           <div style={{
-            flex: '1',
-            minWidth: '300px',
-            backgroundColor: '#1e293b',
-            padding: '20px',
-            borderRadius: '8px',
-            marginBottom: '30px',
+            background: 'rgba(30, 41, 59, 0.6)',
+            backdropFilter: 'blur(20px)',
+            padding: '28px',
+            borderRadius: '20px',
+            border: '1px solid rgba(99, 102, 241, 0.2)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+            animation: 'slideUp 0.5s ease-out',
           }}>
-            <h2 style={{ marginTop: 0 }}>Add a Song</h2>
-            <form onSubmit={handleAddSong} style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '30px' }}>
+            <h2 style={{
+              marginTop: 0,
+              marginBottom: '24px',
+              fontSize: '1.3rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+            }}>
+              <span style={{ fontSize: '1.5rem' }}>➕</span>
+              Add a Song
+            </h2>
+            <form onSubmit={handleAddSong} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               <div>
-                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                <label style={{
+                  display: 'block',
+                  marginBottom: '8px',
+                  fontWeight: 600,
+                  fontSize: '0.9rem',
+                  color: 'rgba(255, 255, 255, 0.8)',
+                }}>
                   Song Name *
                 </label>
                 <input
@@ -197,19 +298,35 @@ function BrawlRoom() {
                   required
                   style={{
                     width: '100%',
-                    padding: '10px',
+                    padding: '14px 16px',
                     fontSize: '1rem',
-                    borderRadius: '6px',
-                    border: '2px solid #475569',
-                    backgroundColor: '#0f172a',
+                    borderRadius: '12px',
+                    border: '2px solid rgba(99, 102, 241, 0.3)',
+                    backgroundColor: 'rgba(15, 23, 42, 0.8)',
                     color: 'white',
                     boxSizing: 'border-box',
+                    transition: 'all 0.2s ease',
+                    outline: 'none',
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = '#6366f1';
+                    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(99, 102, 241, 0.2)';
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = 'rgba(99, 102, 241, 0.3)';
+                    e.currentTarget.style.boxShadow = 'none';
                   }}
                 />
               </div>
               <div>
-                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                  YouTube Link (optional)
+                <label style={{
+                  display: 'block',
+                  marginBottom: '8px',
+                  fontWeight: 600,
+                  fontSize: '0.9rem',
+                  color: 'rgba(255, 255, 255, 0.8)',
+                }}>
+                  YouTube Link <span style={{ color: 'rgba(255,255,255,0.4)', fontWeight: 400 }}>(optional)</span>
                 </label>
                 <input
                   type="url"
@@ -218,93 +335,156 @@ function BrawlRoom() {
                   placeholder="https://youtube.com/watch?v=..."
                   style={{
                     width: '100%',
-                    padding: '10px',
+                    padding: '14px 16px',
                     fontSize: '1rem',
-                    borderRadius: '6px',
-                    border: '2px solid #475569',
-                    backgroundColor: '#0f172a',
+                    borderRadius: '12px',
+                    border: '2px solid rgba(99, 102, 241, 0.3)',
+                    backgroundColor: 'rgba(15, 23, 42, 0.8)',
                     color: 'white',
                     boxSizing: 'border-box',
+                    transition: 'all 0.2s ease',
+                    outline: 'none',
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = '#6366f1';
+                    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(99, 102, 241, 0.2)';
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = 'rgba(99, 102, 241, 0.3)';
+                    e.currentTarget.style.boxShadow = 'none';
                   }}
                 />
               </div>
               <button
                 type="submit"
                 style={{
-                  padding: '12px',
-                  fontSize: '1.1rem',
-                  backgroundColor: '#3b82f6',
+                  padding: '14px',
+                  fontSize: '1rem',
+                  background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
                   color: 'white',
                   border: 'none',
-                  borderRadius: '6px',
+                  borderRadius: '12px',
                   cursor: 'pointer',
-                  fontWeight: 'bold',
+                  fontWeight: 700,
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 4px 15px rgba(99, 102, 241, 0.3)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(99, 102, 241, 0.4)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 15px rgba(99, 102, 241, 0.3)';
                 }}
               >
                 Add Song
               </button>
             </form>
 
-            <div style={{ borderTop: '1px solid #334155', paddingTop: '20px', marginTop: '20px' }}>
+            <div style={{
+              borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+              paddingTop: '24px',
+              marginTop: '24px',
+            }}>
               <button
                 onClick={handleCreateNewBrawl}
                 style={{
                   width: '100%',
-                  padding: '12px',
-                  backgroundColor: 'transparent',
-                  color: '#94a3b8',
-                  border: '1px dashed #475569',
-                  borderRadius: '6px',
+                  padding: '14px',
+                  background: 'transparent',
+                  color: 'rgba(255, 255, 255, 0.6)',
+                  border: '2px dashed rgba(255, 255, 255, 0.2)',
+                  borderRadius: '12px',
                   cursor: 'pointer',
-                  fontWeight: 'bold',
-                  fontSize: '1rem',
-                  transition: 'all 0.2s',
+                  fontWeight: 600,
+                  fontSize: '0.95rem',
+                  transition: 'all 0.2s ease',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#0f172a';
+                  e.currentTarget.style.background = 'rgba(99, 102, 241, 0.1)';
                   e.currentTarget.style.color = 'white';
-                  e.currentTarget.style.borderColor = '#3b82f6';
+                  e.currentTarget.style.borderColor = 'rgba(99, 102, 241, 0.5)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.color = '#94a3b8';
-                  e.currentTarget.style.borderColor = '#475569';
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)';
+                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
                 }}
               >
-                ➕ Create a Brand New Brawl Room
+                ✨ Create New Brawl Room
               </button>
             </div>
           </div>
 
-          {/* Right Column: Added Songs List */}
+          {/* Right Column: Songs List */}
           <div style={{
-            flex: '2',
-            minWidth: '300px',
-            backgroundColor: '#1e293b',
-            padding: '20px',
-            borderRadius: '8px',
-            marginBottom: '30px',
+            background: 'rgba(30, 41, 59, 0.6)',
+            backdropFilter: 'blur(20px)',
+            padding: '28px',
+            borderRadius: '20px',
+            border: '1px solid rgba(99, 102, 241, 0.2)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+            animation: 'slideUp 0.5s ease-out 0.1s both',
           }}>
             {brawl.songs.length > 0 ? (
               <>
-                <h2 style={{ marginTop: 0 }}>Songs ({brawl.songs.length})</h2>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '30px' }}>
-                  {brawl.songs.map((song) => (
+                <h2 style={{
+                  marginTop: 0,
+                  marginBottom: '24px',
+                  fontSize: '1.3rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '1.5rem' }}>🎶</span>
+                    Songs
+                  </span>
+                  <span style={{
+                    background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                    padding: '6px 14px',
+                    borderRadius: '50px',
+                    fontSize: '0.85rem',
+                    fontWeight: 600,
+                  }}>
+                    {brawl.songs.length} {brawl.songs.length === 1 ? 'song' : 'songs'}
+                  </span>
+                </h2>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '28px' }}>
+                  {brawl.songs.map((song, index) => (
                     <div
                       key={song.id}
                       style={{
-                        backgroundColor: '#0f172a',
-                        padding: '15px',
-                        borderRadius: '6px',
+                        background: 'rgba(15, 23, 42, 0.6)',
+                        padding: '18px 20px',
+                        borderRadius: '14px',
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center',
                         flexWrap: 'wrap',
-                        gap: '10px',
+                        gap: '12px',
+                        border: '1px solid rgba(99, 102, 241, 0.15)',
+                        transition: 'all 0.2s ease',
+                        animation: `slideUp 0.4s ease-out ${index * 0.05}s both`,
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = 'rgba(99, 102, 241, 0.4)';
+                        e.currentTarget.style.transform = 'translateX(4px)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = 'rgba(99, 102, 241, 0.15)';
+                        e.currentTarget.style.transform = 'translateX(0)';
                       }}
                     >
-                      <div style={{ flex: 1, minWidth: '200px' }}>
-                        <div style={{ fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '5px' }}>
+                      <div style={{ flex: 1, minWidth: '180px' }}>
+                        <div style={{
+                          fontSize: '1.1rem',
+                          fontWeight: 600,
+                          marginBottom: '4px',
+                          color: 'white',
+                        }}>
                           {song.name}
                         </div>
                         {song.youtubeLink && (
@@ -312,26 +492,55 @@ function BrawlRoom() {
                             href={song.youtubeLink}
                             target="_blank"
                             rel="noopener noreferrer"
-                            style={{ color: '#3b82f6', textDecoration: 'none', fontSize: '0.9rem' }}
+                            style={{
+                              color: '#6366f1',
+                              textDecoration: 'none',
+                              fontSize: '0.85rem',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              transition: 'color 0.2s ease',
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.color = '#818cf8'}
+                            onMouseLeave={(e) => e.currentTarget.style.color = '#6366f1'}
                           >
                             🎬 Watch on YouTube
                           </a>
                         )}
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
-                          ❤️ {song.votes} {song.votes === 1 ? 'vote' : 'votes'}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                        <span style={{
+                          fontSize: '1rem',
+                          fontWeight: 600,
+                          color: '#ec4899',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                        }}>
+                          <span style={{ fontSize: '1.2rem' }}>❤️</span>
+                          {song.votes}
                         </span>
                         <button
                           onClick={() => handleAddVote(song.id)}
                           style={{
-                            padding: '8px 16px',
-                            backgroundColor: '#ec4899',
+                            padding: '10px 18px',
+                            background: 'linear-gradient(135deg, #ec4899 0%, #f472b6 100%)',
                             color: 'white',
                             border: 'none',
-                            borderRadius: '6px',
+                            borderRadius: '50px',
                             cursor: 'pointer',
-                            fontWeight: 'bold',
+                            fontWeight: 700,
+                            fontSize: '0.9rem',
+                            transition: 'all 0.2s ease',
+                            boxShadow: '0 4px 12px rgba(236, 72, 153, 0.3)',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'scale(1.05)';
+                            e.currentTarget.style.boxShadow = '0 6px 16px rgba(236, 72, 153, 0.4)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'scale(1)';
+                            e.currentTarget.style.boxShadow = '0 4px 12px rgba(236, 72, 153, 0.3)';
                           }}
                         >
                           + Vote
@@ -341,43 +550,76 @@ function BrawlRoom() {
                   ))}
                 </div>
 
-                <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-                  <button
-                    onClick={handleBrawl}
-                    disabled={brawl.songs.length === 0}
-                    style={{
-                      padding: '20px 40px',
-                      fontSize: '1.5rem',
-                      backgroundColor: brawl.songs.length === 0 ? '#475569' : '#ef4444',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '8px',
-                      cursor: brawl.songs.length === 0 ? 'not-allowed' : 'pointer',
-                      fontWeight: 'bold',
-                      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)',
-                      width: '100%',
-                    }}
-                  >
-                    🥊 START BRAWL!
-                  </button>
-                </div>
+                {/* Brawl Button */}
+                <button
+                  onClick={handleBrawl}
+                  disabled={brawl.songs.length === 0}
+                  style={{
+                    width: '100%',
+                    padding: '20px 40px',
+                    fontSize: '1.4rem',
+                    background: brawl.songs.length === 0
+                      ? 'rgba(100, 100, 100, 0.3)'
+                      : 'linear-gradient(135deg, #ef4444 0%, #f97316 100%)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '14px',
+                    cursor: brawl.songs.length === 0 ? 'not-allowed' : 'pointer',
+                    fontWeight: 800,
+                    boxShadow: brawl.songs.length === 0
+                      ? 'none'
+                      : '0 8px 30px rgba(239, 68, 68, 0.4)',
+                    transition: 'all 0.3s ease',
+                    letterSpacing: '0.02em',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (brawl.songs.length > 0) {
+                      e.currentTarget.style.transform = 'translateY(-3px) scale(1.02)';
+                      e.currentTarget.style.boxShadow = '0 12px 40px rgba(239, 68, 68, 0.5)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (brawl.songs.length > 0) {
+                      e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                      e.currentTarget.style.boxShadow = '0 8px 30px rgba(239, 68, 68, 0.4)';
+                    }
+                  }}
+                >
+                  🥊 START BRAWL!
+                </button>
               </>
             ) : (
               <div style={{
                 textAlign: 'center',
-                padding: '40px 20px',
-                backgroundColor: '#0f172a',
-                borderRadius: '8px',
-                marginBottom: '30px',
+                padding: '60px 20px',
               }}>
-                <p style={{ fontSize: '1.1rem', color: '#94a3b8' }}>
-                  No songs added yet. Add your first song to get started!
+                <div style={{
+                  fontSize: '4rem',
+                  marginBottom: '16px',
+                  animation: 'bounce 2s ease-in-out infinite',
+                }}>
+                  🎵
+                </div>
+                <h3 style={{
+                  fontSize: '1.3rem',
+                  marginBottom: '8px',
+                  fontWeight: 600,
+                }}>
+                  No songs yet
+                </h3>
+                <p style={{
+                  fontSize: '1rem',
+                  color: 'rgba(255, 255, 255, 0.5)',
+                  margin: 0,
+                }}>
+                  Add your first song to get the brawl started!
                 </p>
               </div>
             )}
           </div>
         </div>
 
+        {/* Winner Modal */}
         {showWinner && brawl.winner && (
           <div style={{
             position: 'fixed',
@@ -385,68 +627,109 @@ function BrawlRoom() {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+            background: 'rgba(0, 0, 0, 0.85)',
+            backdropFilter: 'blur(8px)',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
             zIndex: 1000,
             overflow: 'auto',
+            animation: 'fadeIn 0.3s ease-out',
           }}>
             <div style={{
-              backgroundColor: '#1e293b',
-              padding: '40px',
-              borderRadius: '12px',
+              background: 'linear-gradient(180deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%)',
+              padding: '48px',
+              borderRadius: '24px',
               textAlign: 'center',
-              maxWidth: '800px',
+              maxWidth: '700px',
               width: '90%',
               margin: '20px',
               position: 'relative',
+              border: '1px solid rgba(251, 191, 36, 0.3)',
+              boxShadow: '0 25px 80px rgba(0, 0, 0, 0.5), 0 0 60px rgba(251, 191, 36, 0.15)',
+              animation: 'slideUp 0.4s ease-out',
             }}>
               <button
                 onClick={() => setShowWinner(false)}
                 style={{
                   position: 'absolute',
-                  top: '15px',
-                  right: '15px',
-                  background: 'none',
+                  top: '16px',
+                  right: '16px',
+                  background: 'rgba(255, 255, 255, 0.1)',
                   border: 'none',
-                  color: '#94a3b8',
-                  fontSize: '1.5rem',
+                  color: 'rgba(255, 255, 255, 0.6)',
+                  fontSize: '1.2rem',
                   cursor: 'pointer',
-                  padding: '5px',
+                  padding: '8px 12px',
+                  borderRadius: '50%',
                   lineHeight: 1,
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+                  e.currentTarget.style.color = 'white';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                  e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)';
                 }}
                 aria-label="Close"
               >
                 ✕
               </button>
-              <h2 style={{ fontSize: '2.5rem', marginTop: 0, marginBottom: '20px' }}>
-                🏆 Winner! 🏆
-              </h2>
+
               <div style={{
-                fontSize: '2rem',
-                fontWeight: 'bold',
-                marginBottom: '20px',
-                color: '#fbbf24',
+                fontSize: '4rem',
+                marginBottom: '16px',
+                animation: 'bounce 1s ease-in-out infinite',
+              }}>
+                🏆
+              </div>
+
+              <h2 style={{
+                fontSize: 'clamp(1.5rem, 5vw, 2.2rem)',
+                marginTop: 0,
+                marginBottom: '24px',
+                background: 'linear-gradient(135deg, #fbbf24, #f59e0b, #fbbf24)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                fontWeight: 800,
+              }}>
+                We Have a Winner!
+              </h2>
+
+              <div style={{
+                fontSize: 'clamp(1.5rem, 4vw, 2rem)',
+                fontWeight: 700,
+                marginBottom: '28px',
+                color: 'white',
+                padding: '16px 24px',
+                background: 'rgba(251, 191, 36, 0.1)',
+                borderRadius: '12px',
+                border: '1px solid rgba(251, 191, 36, 0.2)',
               }}>
                 {brawl.winner.name}
               </div>
+
               {brawl.winner.youtubeLink && (() => {
                 const videoId = getYouTubeVideoId(brawl.winner.youtubeLink);
                 return videoId ? (
-                  <div style={{ marginBottom: '20px' }}>
+                  <div style={{
+                    marginBottom: '28px',
+                    borderRadius: '12px',
+                    overflow: 'hidden',
+                    boxShadow: '0 8px 30px rgba(0, 0, 0, 0.4)',
+                  }}>
                     <iframe
                       width="100%"
-                      height="400"
+                      height="350"
                       src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
                       title={brawl.winner.name}
                       frameBorder="0"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
-                      style={{
-                        borderRadius: '8px',
-                        maxWidth: '640px',
-                      }}
+                      style={{ display: 'block' }}
                     ></iframe>
                   </div>
                 ) : (
@@ -456,36 +739,47 @@ function BrawlRoom() {
                     rel="noopener noreferrer"
                     style={{
                       display: 'inline-block',
-                      marginBottom: '20px',
-                      padding: '10px 20px',
-                      backgroundColor: '#3b82f6',
+                      marginBottom: '28px',
+                      padding: '14px 28px',
+                      background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
                       color: 'white',
                       textDecoration: 'none',
-                      borderRadius: '6px',
-                      fontWeight: 'bold',
+                      borderRadius: '50px',
+                      fontWeight: 700,
+                      boxShadow: '0 4px 15px rgba(99, 102, 241, 0.4)',
+                      transition: 'all 0.2s ease',
                     }}
                   >
                     🎬 Watch on YouTube
                   </a>
                 );
               })()}
-              <div style={{ marginTop: '30px' }}>
-                <button
-                  onClick={handleNewBrawl}
-                  style={{
-                    padding: '15px 30px',
-                    fontSize: '1.2rem',
-                    backgroundColor: '#3b82f6',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontWeight: 'bold',
-                  }}
-                >
-                  Start New Brawl
-                </button>
-              </div>
+
+              <button
+                onClick={handleNewBrawl}
+                style={{
+                  padding: '16px 40px',
+                  fontSize: '1.1rem',
+                  background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '50px',
+                  cursor: 'pointer',
+                  fontWeight: 700,
+                  boxShadow: '0 8px 25px rgba(99, 102, 241, 0.4)',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
+                  e.currentTarget.style.boxShadow = '0 12px 35px rgba(99, 102, 241, 0.5)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                  e.currentTarget.style.boxShadow = '0 8px 25px rgba(99, 102, 241, 0.4)';
+                }}
+              >
+                🔄 Start New Round
+              </button>
             </div>
           </div>
         )}
