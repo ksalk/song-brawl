@@ -23,7 +23,7 @@ import { routeTree } from './routeTree.gen'
 
 export function getRouter() {
   const router = createRouter({
-    routeTree
+    routeTree,
   })
   return router
 }
