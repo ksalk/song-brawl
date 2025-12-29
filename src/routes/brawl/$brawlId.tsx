@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { BrawlService } from './utils/brawlService';
-import type { Brawl, Song } from './utils/types';
-import { generateGuid } from './utils/utils';
+import { createFileRoute } from '@tanstack/react-router';
+import type { Brawl, Song } from '../../utils/types';
+import { BrawlService } from '../../utils/brawlService';
+import { generateGuid } from '../../utils/utils';
+
+export const Route = createFileRoute('/brawl/$brawlId')({ component: BrawlRoom })
 
 // Helper function to extract YouTube video ID from URL
 function getYouTubeVideoId(url: string): string | null {

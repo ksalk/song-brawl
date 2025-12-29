@@ -1,6 +1,8 @@
-import { useNavigate } from 'react-router-dom';
-import { generateGuid } from './utils';
-import { BrawlService } from './brawlService';
+import { generateGuid } from '../utils/utils';
+import { BrawlService } from '../utils/brawlService';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
+
+export const Route = createFileRoute('/')({ component: Home })
 
 function Home() {
   const navigate = useNavigate();
@@ -8,7 +10,7 @@ function Home() {
   const handleCreateBrawl = async () => {
     const brawlId = generateGuid();
     await BrawlService.createBrawl(brawlId);
-    navigate(`/brawl/${brawlId}`);
+    navigate({ to: `/brawl/${brawlId}` });
   };
 
   return (
