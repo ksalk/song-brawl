@@ -1,32 +1,5 @@
 import { createServerFn } from '@tanstack/react-start'
-import Database from 'better-sqlite3';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import type { Brawl, Song } from '../utils/types';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Initialize SQLite database
-const dbPath = path.join(__dirname, 'brawl.db');
-const db = new Database(dbPath);
-
-// Create tables if they don't exist
-db.exec(`
-  CREATE TABLE IF NOT EXISTS brawls (
-    id TEXT PRIMARY KEY,
-    winner_id TEXT
-  );
-
-  CREATE TABLE IF NOT EXISTS songs (
-    id TEXT PRIMARY KEY,
-    brawl_id TEXT NOT NULL,
-    name TEXT NOT NULL,
-    youtube_link TEXT,
-    votes INTEGER DEFAULT 1,
-    FOREIGN KEY (brawl_id) REFERENCES brawls(id) ON DELETE CASCADE
-  );
-`);
 
 interface BrawlRow {
   id: string;
@@ -41,9 +14,15 @@ interface SongRow {
   votes: number;
 }
 
+async function getDb() {
+  const { db } = await import('./db');
+  return db;
+}
+
 export const getBrawl = createServerFn({ method: 'GET' })
   .inputValidator((id: string) => id)
   .handler(async ({ data: id }) => {
+    const db = await getDb();
     const brawl = db.prepare('SELECT * FROM brawls WHERE id = ?').get(id) as BrawlRow | undefined;
     if (!brawl) {
       return { id, songs: [], winner: undefined } as Brawl;
@@ -79,6 +58,7 @@ export const getBrawl = createServerFn({ method: 'GET' })
 export const createBrawl = createServerFn({ method: 'POST' })
   .inputValidator((id: string) => id)
   .handler(async ({ data: id }) => {
+    const db = await getDb();
     try {
       db.prepare('INSERT INTO brawls (id) VALUES (?)').run(id);
       return { id, songs: [] } as Brawl;
@@ -91,6 +71,7 @@ export const createBrawl = createServerFn({ method: 'POST' })
 export const addSong = createServerFn({ method: 'POST' })
   .inputValidator((data: { brawlId: string; song: Omit<Song, 'votes'> }) => data)
   .handler(async ({ data: { brawlId, song } }) => {
+    const db = await getDb();
     db.prepare(
       'INSERT INTO songs (id, brawl_id, name, youtube_link, votes) VALUES (?, ?, ?, ?, 1)'
     ).run(song.id, brawlId, song.name, song.youtubeLink || null);
@@ -101,6 +82,7 @@ export const addSong = createServerFn({ method: 'POST' })
 export const updateVotes = createServerFn({ method: 'POST' })
   .inputValidator((data: { brawlId: string; songId: string; votes: number }) => data)
   .handler(async ({ data: { brawlId, songId, votes } }) => {
+    const db = await getDb();
     db.prepare('UPDATE songs SET votes = ? WHERE id = ? AND brawl_id = ?').run(
       votes,
       songId,
@@ -113,6 +95,7 @@ export const updateVotes = createServerFn({ method: 'POST' })
 export const setWinner = createServerFn({ method: 'POST' })
   .inputValidator((data: { brawlId: string; winnerId: string }) => data)
   .handler(async ({ data: { brawlId, winnerId } }) => {
+    const db = await getDb();
     db.prepare('UPDATE brawls SET winner_id = ? WHERE id = ?').run(winnerId, brawlId);
     return getBrawl({ data: brawlId });
   });
