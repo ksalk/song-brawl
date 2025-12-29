@@ -1,57 +1,49 @@
 import type { Brawl, Song } from './types';
 
-// In-memory storage for brawl rooms
-const brawls = new Map<string, Brawl>();
+const API_URL = 'http://localhost:3001/api';
 
 export const BrawlService = {
   // Create a new brawl room with a GUID
-  createBrawl(id: string): Brawl {
-    const brawl: Brawl = {
-      id,
-      songs: [],
-    };
-    brawls.set(id, brawl);
-    return brawl;
+  async createBrawl(id: string): Promise<Brawl> {
+    const response = await fetch(`${API_URL}/brawls`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id }),
+    });
+    return response.json();
   },
 
   // Get a brawl by ID
-  getBrawl(id: string): Brawl | undefined {
-    return brawls.get(id);
+  async getBrawl(id: string): Promise<Brawl | undefined> {
+    const response = await fetch(`${API_URL}/brawls/${id}`);
+    const data = await response.json();
+    return data.songs || data.songs.length > 0 || data.winner ? data : undefined;
   },
 
   // Add a song to a brawl
-  addSong(brawlId: string, song: Song): Brawl | undefined {
-    const brawl = brawls.get(brawlId);
-    if (!brawl) return undefined;
-    
-    const updatedBrawl = {
-      ...brawl,
-      songs: [...brawl.songs, song],
-    };
-    brawls.set(brawlId, updatedBrawl);
-    return updatedBrawl;
+  async addSong(brawlId: string, song: Song): Promise<Brawl | undefined> {
+    const response = await fetch(`${API_URL}/brawls/${brawlId}/songs`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(song),
+    });
+    return response.json();
   },
 
   // Update votes for a song
-  updateSongVotes(brawlId: string, songId: string, votes: number): Brawl | undefined {
-    const brawl = brawls.get(brawlId);
-    if (!brawl) return undefined;
-
-    const updatedSongs = brawl.songs.map(s => 
-      s.id === songId ? { ...s, votes } : s
-    );
-    
-    const updatedBrawl = {
-      ...brawl,
-      songs: updatedSongs,
-    };
-    brawls.set(brawlId, updatedBrawl);
-    return updatedBrawl;
+  async updateSongVotes(brawlId: string, songId: string, votes: number): Promise<Brawl | undefined> {
+    const response = await fetch(`${API_URL}/brawls/${brawlId}/songs/${songId}/votes`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ votes }),
+    });
+    return response.json();
   },
 
   // Select a random winner based on votes
-  selectWinner(brawlId: string): Brawl | undefined {
-    const brawl = brawls.get(brawlId);
+  async selectWinner(brawlId: string): Promise<Brawl | undefined> {
+    // First get the brawl to calculate winner client-side
+    const brawl = await this.getBrawl(brawlId);
     if (!brawl || brawl.songs.length === 0) return undefined;
 
     // Create a weighted array where each song appears according to its vote count
@@ -68,11 +60,14 @@ export const BrawlService = {
     if (weightedSongs.length === 0) return brawl;
     
     const randomIndex = Math.floor(Math.random() * weightedSongs.length);
-    const updatedBrawl = {
-      ...brawl,
-      winner: weightedSongs[randomIndex],
-    };
-    brawls.set(brawlId, updatedBrawl);
-    return updatedBrawl;
+    const winner = weightedSongs[randomIndex];
+
+    // Save the winner to the database
+    const response = await fetch(`${API_URL}/brawls/${brawlId}/winner`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ winnerId: winner.id }),
+    });
+    return response.json();
   },
 };

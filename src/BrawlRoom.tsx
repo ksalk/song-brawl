@@ -4,17 +4,19 @@ import { BrawlService } from './brawlService';
 import type { Brawl, Song } from './types';
 import { generateGuid } from './utils';
 
+// Helper function to extract YouTube video ID from URL
+function getYouTubeVideoId(url: string): string | null {
+  if (!url) return null;
+  const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[7].length === 11) ? match[7] : null;
+}
+
 function BrawlRoom() {
   const { brawlId } = useParams<{ brawlId: string }>();
   const navigate = useNavigate();
-  const [brawl, setBrawl] = useState<Brawl | null>(() => {
-    if (!brawlId) return null;
-    let currentBrawl = BrawlService.getBrawl(brawlId);
-    if (!currentBrawl) {
-      currentBrawl = BrawlService.createBrawl(brawlId);
-    }
-    return currentBrawl;
-  });
+  const [brawl, setBrawl] = useState<Brawl | null>(null);
+  const [loading, setLoading] = useState(true);
   const [songName, setSongName] = useState('');
   const [youtubeLink, setYoutubeLink] = useState('');
   const [showWinner, setShowWinner] = useState(false);
@@ -22,10 +24,28 @@ function BrawlRoom() {
   useEffect(() => {
     if (!brawlId) {
       navigate('/');
+      return;
     }
+
+    // Load brawl from database
+    const loadBrawl = async () => {
+      try {
+        let currentBrawl = await BrawlService.getBrawl(brawlId);
+        if (!currentBrawl) {
+          currentBrawl = await BrawlService.createBrawl(brawlId);
+        }
+        setBrawl(currentBrawl);
+      } catch (error) {
+        console.error('Error loading brawl:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadBrawl();
   }, [brawlId, navigate]);
 
-  const handleAddSong = (e: React.FormEvent) => {
+  const handleAddSong = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!brawlId || !songName.trim()) return;
 
@@ -36,33 +56,45 @@ function BrawlRoom() {
       votes: 1, // Each song starts with 1 vote
     };
 
-    const updatedBrawl = BrawlService.addSong(brawlId, newSong);
-    if (updatedBrawl) {
-      setBrawl(updatedBrawl);
-      setSongName('');
-      setYoutubeLink('');
+    try {
+      const updatedBrawl = await BrawlService.addSong(brawlId, newSong);
+      if (updatedBrawl) {
+        setBrawl(updatedBrawl);
+        setSongName('');
+        setYoutubeLink('');
+      }
+    } catch (error) {
+      console.error('Error adding song:', error);
     }
   };
 
-  const handleAddVote = (songId: string) => {
+  const handleAddVote = async (songId: string) => {
     if (!brawlId) return;
 
     const song = brawl?.songs.find(s => s.id === songId);
     if (!song) return;
 
-    const updatedBrawl = BrawlService.updateSongVotes(brawlId, songId, song.votes + 1);
-    if (updatedBrawl) {
-      setBrawl(updatedBrawl);
+    try {
+      const updatedBrawl = await BrawlService.updateSongVotes(brawlId, songId, song.votes + 1);
+      if (updatedBrawl) {
+        setBrawl(updatedBrawl);
+      }
+    } catch (error) {
+      console.error('Error updating votes:', error);
     }
   };
 
-  const handleBrawl = () => {
+  const handleBrawl = async () => {
     if (!brawlId) return;
 
-    const updatedBrawl = BrawlService.selectWinner(brawlId);
-    if (updatedBrawl) {
-      setBrawl(updatedBrawl);
-      setShowWinner(true);
+    try {
+      const updatedBrawl = await BrawlService.selectWinner(brawlId);
+      if (updatedBrawl) {
+        setBrawl(updatedBrawl);
+        setShowWinner(true);
+      }
+    } catch (error) {
+      console.error('Error selecting winner:', error);
     }
   };
 
@@ -80,7 +112,7 @@ function BrawlRoom() {
     }
   };
 
-  if (!brawl) {
+  if (loading || !brawl) {
     return (
       <div style={{ padding: '20px', backgroundColor: '#0f172a', minHeight: '100vh', color: 'white' }}>
         Loading...
@@ -291,13 +323,15 @@ function BrawlRoom() {
             justifyContent: 'center',
             alignItems: 'center',
             zIndex: 1000,
+            overflow: 'auto',
           }}>
             <div style={{
               backgroundColor: '#1e293b',
               padding: '40px',
               borderRadius: '12px',
               textAlign: 'center',
-              maxWidth: '600px',
+              maxWidth: '800px',
+              width: '90%',
               margin: '20px',
             }}>
               <h2 style={{ fontSize: '2.5rem', marginTop: 0, marginBottom: '20px' }}>
@@ -311,25 +345,44 @@ function BrawlRoom() {
               }}>
                 {brawl.winner.name}
               </div>
-              {brawl.winner.youtubeLink && (
-                <a
-                  href={brawl.winner.youtubeLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    display: 'inline-block',
-                    marginBottom: '20px',
-                    padding: '10px 20px',
-                    backgroundColor: '#3b82f6',
-                    color: 'white',
-                    textDecoration: 'none',
-                    borderRadius: '6px',
-                    fontWeight: 'bold',
-                  }}
-                >
-                  🎬 Watch on YouTube
-                </a>
-              )}
+              {brawl.winner.youtubeLink && (() => {
+                const videoId = getYouTubeVideoId(brawl.winner.youtubeLink);
+                return videoId ? (
+                  <div style={{ marginBottom: '20px' }}>
+                    <iframe
+                      width="100%"
+                      height="400"
+                      src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
+                      title={brawl.winner.name}
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      style={{
+                        borderRadius: '8px',
+                        maxWidth: '640px',
+                      }}
+                    ></iframe>
+                  </div>
+                ) : (
+                  <a
+                    href={brawl.winner.youtubeLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-block',
+                      marginBottom: '20px',
+                      padding: '10px 20px',
+                      backgroundColor: '#3b82f6',
+                      color: 'white',
+                      textDecoration: 'none',
+                      borderRadius: '6px',
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    🎬 Watch on YouTube
+                  </a>
+                );
+              })()}
               <div style={{ marginTop: '30px' }}>
                 <button
                   onClick={handleNewBrawl}

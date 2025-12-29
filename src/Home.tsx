@@ -5,9 +5,9 @@ import { BrawlService } from './brawlService';
 function Home() {
   const navigate = useNavigate();
 
-  const handleCreateBrawl = () => {
+  const handleCreateBrawl = async () => {
     const brawlId = generateGuid();
-    BrawlService.createBrawl(brawlId);
+    await BrawlService.createBrawl(brawlId);
     navigate(`/brawl/${brawlId}`);
   };
 

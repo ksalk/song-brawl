@@ -9,6 +9,8 @@ A fun TanStack Start application where users can create brawl rooms, add their f
 - **Voting System**: Each song starts with 1 vote, add more to increase winning chances
 - **Weighted Random Selection**: The brawl selects a winner based on vote weights
 - **Share with Friends**: Copy and share brawl room links to play together
+- **Persistent Storage**: Data is stored in SQLite database and survives page refreshes
+- **YouTube Integration**: Winner videos are embedded and auto-play in the winner modal
 - **Modern UI**: Clean, responsive design with a dark theme
 
 ## Getting Started
@@ -26,9 +28,15 @@ npm install
 
 ### Development
 
+The application runs both a frontend (Vite) and backend (Express + SQLite) server:
+
 ```bash
 npm run dev
 ```
+
+This will start:
+- Frontend: `http://localhost:5173`
+- Backend API: `http://localhost:3001`
 
 Visit `http://localhost:5173` to start using the app.
 
