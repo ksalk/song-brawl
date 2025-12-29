@@ -84,8 +84,8 @@ function Home() {
           color: 'rgba(255, 255, 255, 0.7)',
           lineHeight: 1.7,
         }}>
-          Create a brawl room, add your favorite songs, vote with friends, 
-          and let the battle decide the ultimate winner!
+          Create a brawl room, add your favorite songs
+          and let the dice decide the ultimate winner!
         </p>
 
         <button
