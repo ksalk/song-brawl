@@ -54,12 +54,11 @@ npm run lint
 
 ## Tech Stack
 
-- **TanStack Start**: Full-stack React framework
 - **React 19**: UI library
 - **React Router DOM**: Routing
 - **TanStack Query**: Data fetching
 - **TypeScript**: Type safety
-- **Vite**: Build tool
+- **Vite**: Build tool and dev server
 
 ## License
 

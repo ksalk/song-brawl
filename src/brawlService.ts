@@ -55,6 +55,8 @@ export const BrawlService = {
     if (!brawl || brawl.songs.length === 0) return undefined;
 
     // Create a weighted array where each song appears according to its vote count
+    // Note: This approach is O(total_votes) in memory but simple and works well
+    // for typical use cases (dozens to hundreds of votes per song)
     const weightedSongs: Song[] = [];
     brawl.songs.forEach(song => {
       for (let i = 0; i < song.votes; i++) {
