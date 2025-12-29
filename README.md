@@ -28,17 +28,13 @@ npm install
 
 ### Development
 
-The application runs both a frontend (Vite) and backend (Express + SQLite) server:
+The application uses TanStack Start with server functions and SQLite:
 
 ```bash
 npm run dev
 ```
 
-This will start:
-- Frontend: `http://localhost:5173`
-- Backend API: `http://localhost:3001`
-
-Visit `http://localhost:5173` to start using the app.
+Visit `http://localhost:3001` (or the port shown in the terminal) to start using the app.
 
 ### Build
 

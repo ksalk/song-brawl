@@ -1,43 +1,26 @@
 import type { Brawl, Song } from './types';
-
-const API_URL = 'http://localhost:3001/api';
+import { getBrawl, createBrawl, addSong, updateVotes, setWinner } from '../server/brawlFunctions';
 
 export const BrawlService = {
   // Create a new brawl room with a GUID
   async createBrawl(id: string): Promise<Brawl> {
-    const response = await fetch(`${API_URL}/brawls`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id }),
-    });
-    return response.json();
+    return createBrawl({ data: id });
   },
 
   // Get a brawl by ID
   async getBrawl(id: string): Promise<Brawl | undefined> {
-    const response = await fetch(`${API_URL}/brawls/${id}`);
-    const data = await response.json();
-    return data.songs || data.songs.length > 0 || data.winner ? data : undefined;
+    const data = await getBrawl({ data: id });
+    return data.songs.length > 0 || data.winner ? data : undefined;
   },
 
   // Add a song to a brawl
   async addSong(brawlId: string, song: Song): Promise<Brawl | undefined> {
-    const response = await fetch(`${API_URL}/brawls/${brawlId}/songs`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(song),
-    });
-    return response.json();
+    return addSong({ data: { brawlId, song } });
   },
 
   // Update votes for a song
   async updateSongVotes(brawlId: string, songId: string, votes: number): Promise<Brawl | undefined> {
-    const response = await fetch(`${API_URL}/brawls/${brawlId}/songs/${songId}/votes`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ votes }),
-    });
-    return response.json();
+    return updateVotes({ data: { brawlId, songId, votes } });
   },
 
   // Select a random winner based on votes
@@ -63,11 +46,6 @@ export const BrawlService = {
     const winner = weightedSongs[randomIndex];
 
     // Save the winner to the database
-    const response = await fetch(`${API_URL}/brawls/${brawlId}/winner`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ winnerId: winner.id }),
-    });
-    return response.json();
+    return setWinner({ data: { brawlId, winnerId: winner.id } });
   },
 };
